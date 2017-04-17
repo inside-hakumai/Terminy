@@ -1,0 +1,14 @@
+{
+  "name": "deadline-watcher",
+  "version": "0.0.0",
+  "description": "watch your deadlines",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "inside-hakumai",
+  "license": "MIT",
+  "dependencies": {
+    "electron": "^1.6.2"
+  }
+}
