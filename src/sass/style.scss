@@ -1,0 +1,42 @@
+@font-face {
+   font-family: 'dseg';
+   src: url('/style/DSEG7Modern-Regular.woff') format('woff'),
+        url('/style/DSEG7Modern-Regular.ttf') format('truetype');
+}
+
+html {
+   height: 100%;
+   font-family: "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+   -webkit-app-region: drag;
+   background: rgba(255, 255, 255, 0.5);
+
+   body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+
+      timers {
+         div.timer {
+            padding: 5px 10px;
+
+            p {
+               margin: 0;
+               display: block;
+            }
+            p.detail {
+               height: 40px;
+               line-height: 40px;
+               font-size: 20px;
+            }
+            p.time {
+               font-family: 'dseg', "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;;
+               line-height: 58px;
+               font-size: 40px;
+            }
+         }
+         div.timer + div.timer {
+            border-top: 1px dashed grey;
+         }
+      }
+   }
+}

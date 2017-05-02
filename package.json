@@ -4,11 +4,23 @@
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "gulp && electron ."
   },
   "author": "inside-hakumai",
   "license": "MIT",
   "dependencies": {
-    "electron": "^1.6.2"
+    "electron": "^1.6.2",
+    "jquery": "^3.2.1",
+    "moment": "^2.18.1",
+    "riot": "^3.4.4"
+  },
+  "devDependencies": {
+    "babel-preset-es2015-riot": "^1.1.0",
+    "browserify": "^14.3.0",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0",
+    "riotify": "^2.0.0",
+    "vinyl-source-stream": "^1.1.0"
   }
 }
