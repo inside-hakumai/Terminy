@@ -1,8 +1,11 @@
-@font-face {
-   font-family: 'dseg';
-   src: url('/style/DSEG7Modern-Regular.woff') format('woff'),
-        url('/style/DSEG7Modern-Regular.ttf') format('truetype');
+/** reset **/
+/***********/
+p {
+   margin: 0;
+   display: block;
 }
+/***********/
+
 
 html {
    height: 100%;
@@ -14,26 +17,179 @@ html {
       margin: 0;
       width: 100%;
       height: 100%;
+      overflow: hidden;
 
       timers {
          div.timer {
-            padding: 5px 10px;
+            -webkit-transform: translateX(0);
+            transform: translateX(0);
+            -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
+            transition: opacity 0.3s, transform 0.3s;
+            width: 1000px;
+            height: 98px;
+            position: relative;
 
-            p {
-               margin: 0;
-               display: block;
+            &:hover {
+               -webkit-transform: translateX(-350px);
+               transform: translateX(-350px);
             }
-            p.detail {
-               height: 40px;
-               line-height: 40px;
-               font-size: 20px;
+
+            div.default-panel,
+            div.hover-panel {
+               display: inline-block;
+               width: 330px;
+               height: 88px;
+               position: absolute;
+               top: 0;
+               padding: 5px 10px;
             }
-            p.time {
-               font-family: 'dseg', "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;;
-               line-height: 58px;
-               font-size: 40px;
+
+            div.default-panel {
+               p.detail {
+                  height: 30px;
+                  line-height: 30px;
+                  font-size: 20px;
+               }
+               p.time {
+                  font-family: 'dseg', "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;;
+                  line-height: 58px;
+                  font-size: 40px;
+               }
+            }
+
+            div.hover-panel {
+               left: 350px;
+               background: rgba(255, 118, 0, 0.5);
+
+               p.edit-date {
+                  margin: 8px 0;
+
+                  input[type=text] {
+                     width: 30px;
+                     margin-right: 3px;
+                  }
+               }
+               p.buttons {
+                  text-align: right;
+                  height: 25px;
+
+                  button.done {
+                     border: 1px solid #78B347;
+                     background: #78B347;
+                  }
+                  button.clear {
+                     border: 1px solid #FF2125;
+                     background: #FF2125;
+                  }
+                  button.done, button.clear {
+                     width: 25px;
+                     height: 25px;
+                     padding: 0;
+                     border-radius: 12.5px;
+                     outline: none;
+                     cursor: pointer;
+
+                     &:hover {
+                        opacity: 0.6;
+                     }
+                     img {
+                        width: 20px;
+                        height: 20px;
+                        margin: 1.5px 0;
+                     }
+                  }
+               }
             }
          }
+         /*
+         div.timer {
+            position: relative;
+            overflow: hidden;
+
+            div.default-panel,
+            div.hover-panel {
+               display: inline-block;
+            }
+
+            div.default-panel {
+               padding: 5px 10px;
+
+               p {
+                  margin: 0;
+                  display: block;
+               }
+               p.detail {
+                  height: 40px;
+                  line-height: 40px;
+                  font-size: 20px;
+               }
+               p.time {
+                  font-family: 'dseg', "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;;
+                  line-height: 58px;
+                  font-size: 40px;
+               }
+            }
+            div.hover-panel {
+               padding: 5px 10px;
+               width: calc(100% - 20px);
+               height: 98px;
+               top: 0;
+               position: absolute;
+               float: left;
+               background: rgb(255, 150, 150);
+               -webkit-transform: translateX(100%);
+               transform: translateX(100%);
+               -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
+               transition: opacity 0.3s, transform 0.3s;
+
+               p {
+                  margin: 8px 0;
+
+                  input[type=text] {
+                     width: 30px;
+                     margin-right: 3px;
+                  }
+               }
+               p.buttons {
+                  text-align: right;
+
+                  button.done {
+                     border: 1px solid #78B347;
+                     background: #78B347;
+                  }
+                  button.clear {
+                     border: 1px solid #FF2125;
+                     background: #FF2125;
+                  }
+                  button.done, button.clear {
+                     width: 25px;
+                     height: 25px;
+                     padding: 0;
+                     border-radius: 12.5px;
+                     outline: none;
+                     cursor: pointer;
+
+                     &:hover {
+                        opacity: 0.6;
+                     }
+                     img {
+                        width: 20px;
+                        height: 20px;
+                        margin: 1.5px 0;
+                     }
+                  }
+               }
+            }
+         }
+         div.timer:hover {
+            -webkit-transform: translateX(-350px);
+            transform: translateX(-350px);
+         }
+         div.timer:hover > div.hover-panel {
+            -webkit-transform: translateX(0);
+            transform: translateX(0);
+         }
+         */
          div.timer + div.timer {
             border-top: 1px dashed grey;
          }

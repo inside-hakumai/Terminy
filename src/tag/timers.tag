@@ -1,7 +1,23 @@
 <timers>
    <div class="timer" each='{tasks}'>
-      <p class="detail">{detail}まで</p>
-      <p class="time">{parent.remainingTime(deadline)}</p>
+      <div class="default-panel">
+         <p class="detail">{detail}まで</p>
+         <p class="time">{parent.remainingTime(deadline)}</p>
+      </div>
+      <div class="hover-panel">
+         <p class="edit-detail">{detail}</p>
+         <p class="edit-date">
+            <input type="text" name="dl-year" value='{deadline.year()}'>年
+            <input type="text" name="dl-year" value='{deadline.month()}'>月
+            <input type="text" name="dl-year" value='{deadline.day()}'>日
+            <input type="text" name="dl-year" value='{deadline.hour()}'>時
+            <input type="text" name="dl-year" value='{deadline.minute()}'>分
+         </p>
+         <p class="buttons">
+            <button class="done"><img src="./images/ic_done_black_24px.svg"></button>
+            <button class="clear"><img src="./images/ic_clear_black_24px.svg"></button>
+         </p>
+      </div>
    </div>
 
    <script>
@@ -10,14 +26,20 @@
       window.jquery = window.$ = require('jquery');
 
       this.tasks = [
-         {detail: '論文読みの期限', deadline: moment(new Date(2017, 4, 21, 10, 30))},
-         {detail: 'バイトのアレ完成', deadline: moment(new Date(2017, 4, 24, 18, 0))}
+         {detail: '打ち合わせ', deadline: moment(new Date(2017, 4, 18, 17, 30))},
+         {detail: '院試', deadline: moment(new Date(2017, 7, 23, 8, 0))}
       ];
 
       this.remainingTime = function (deadline) {
          let nowDate = moment(new Date());
          let remainingSecond = deadline.diff(nowDate, 'seconds');
-         let day = ('00' + parseInt(remainingSecond / 86400)).slice(-2);
+         let dayNum = parseInt(remainingSecond / 86400);
+         let day;
+         if (String(dayNum).length >= 3) {
+            day = String(dayNum);
+         } else {
+            day = ('00' + parseInt(remainingSecond / 86400)).slice(-2);
+         }
          let hour = ('00' + parseInt(remainingSecond % 86400 / 3600)).slice(-2);
          let minute = ('00' + parseInt(remainingSecond % 86400 % 3600 / 60)).slice(-2);
          let second = ('00' + parseInt(remainingSecond % 86400 % 3600 % 60)).slice(-2);
@@ -42,6 +64,10 @@
             clearInterval(intervalID);
          }
       }, 50);
+
+      this.dlToString = function(deadline){
+         return deadline.toString();
+      }
 
    </script>
 </timers>

@@ -8,7 +8,7 @@ let tasks = [];
 $(document).ready(function(){
    riot.mount('timers');
    // window.resizeTo(300, tasks.length*108 + (tasks.length-1));
-   window.resizeTo(300, 2*108 + 1);
+   window.resizeTo(350, 2*98 + 1);
 });
 
 function update(){

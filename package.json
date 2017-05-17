@@ -1,5 +1,5 @@
 {
-  "name": "deadline-watcher",
+  "name": "DLWatcher",
   "version": "0.0.0",
   "description": "watch your deadlines",
   "main": "main.js",
@@ -10,7 +10,10 @@
   "author": "inside-hakumai",
   "license": "MIT",
   "dependencies": {
+    "csv-parse": "^1.2.0",
+    "dotenv": "^4.0.0",
     "electron": "^1.6.2",
+    "electron-json-storage": "^3.0.5",
     "jquery": "^3.2.1",
     "moment": "^2.18.1",
     "riot": "^3.4.4"
@@ -22,5 +25,6 @@
     "gulp-sass": "^3.1.0",
     "riotify": "^2.0.0",
     "vinyl-source-stream": "^1.1.0"
-  }
+  },
+  "WINDOW_WIDTH": 350
 }

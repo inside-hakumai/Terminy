@@ -1,15 +1,23 @@
-const {app, BrowserWindow} = require('electron')
-const path = require('path')
-const url = require('url')
+const {app, BrowserWindow} = require('electron');
+const path = require('path');
+const url = require('url');
+
+const storage = require('electron-json-storage');
+const fs = require('fs');
+const parse = require('csv-parse/lib/sync');
+const moment = require('moment');
+
+const APP_NAME = 'DLWatcher';
+const APP_NAME_LCASE = 'dlwatcher';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
 
 function createWindow () {
    // Create the browser window.
    win = new BrowserWindow({
-      width: 300,
+      width: 350,
       height: 108,
       frame: false,
       resizable: false,
@@ -61,3 +69,74 @@ app.on('activate', () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+app.on('ready', loadConfig);
+
+function loadConfig(){
+   storage.get('config', function(error, data) {
+      if (error) throw error;
+
+      let configData;
+
+      if (Object.keys(data).length === 0){
+         configData = getInitialConfig();
+         storage.set('config', configData, function(error){
+            if (error) throw error;
+         });
+      } else {
+         configData = data;
+      }
+      console.log(configData.savePath);
+      console.log(initializeTaskData(data.savePath));
+   });
+}
+
+function getInitialConfig(){
+   return {
+      'savePath': app.getPath('home') + '/.' + APP_NAME_LCASE + '/tasks.csv'
+   }
+}
+
+function initializeTaskData(filePath){
+   let tasks = [];
+
+   fs.readFile(filePath, 'utf8', function(err, data){
+      if (err) throw err;
+
+      let poutput = parse(data);
+      poutput.shift(); // delete header row
+      tasks = [];
+      for(let i = 0; i < poutput.length; i++){
+         let arr = poutput[i];
+         if (arr[6] === 'false') {
+            tasks.push({
+               detail: arr[0],
+               deadline: moment(new Date(arr[1], arr[2], arr[3], arr[4], arr[5]))
+            });
+         }
+      }
+      /*
+      parse(data, function(perr, poutput){
+         if (perr) throw perr;
+
+         poutput.shift(); // delete header row
+         tasks = [];
+         for(let i = 0; i < poutput.length; i++){
+            let arr = poutput[i];
+            if (arr[6] === 'false') {
+               tasks.push({
+                  detail: arr[0],
+                  deadline: moment(new Date(arr[1], arr[2], arr[3], arr[4], arr[5]))
+               });
+            }
+            console.log(tasks);
+         }
+         console.log(tasks);
+      });
+      console.log(tasks);
+      */
+   });
+
+   console.log(tasks);
+   return tasks;
+}
