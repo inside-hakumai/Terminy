@@ -10,6 +10,8 @@ const moment = require('moment');
 const APP_NAME = 'DLWatcher';
 const APP_NAME_LCASE = 'dlwatcher';
 
+let taskData;
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
@@ -72,6 +74,10 @@ app.on('activate', () => {
 
 app.on('ready', loadConfig);
 
+/**
+ * 設定とタスクのデータをロードする
+ * ロード完了後、RendererProcess側の'did-finish-load'イベントを受けてメッセージを送る
+ */
 function loadConfig(){
    storage.get('config', function(error, data) {
       if (error) throw error;
@@ -86,57 +92,52 @@ function loadConfig(){
       } else {
          configData = data;
       }
-      console.log(configData.savePath);
-      console.log(initializeTaskData(data.savePath));
+      taskData = initializeTaskData(data.savePath);
+
+      win.webContents.on('did-finish-load', function() {
+         win.webContents.send('ready-tasks');
+      });
    });
 }
 
+/**
+ * 初期設定のJSONを返す
+ * @returns {{savePath: string}} 初期設定のJSON
+ */
 function getInitialConfig(){
    return {
       'savePath': app.getPath('home') + '/.' + APP_NAME_LCASE + '/tasks.csv'
    }
 }
 
+/**
+ * タスクデータをファイルから取得する
+ * @param filePath タスクデータを記録したファイルのパス
+ * @returns {Array} タスクを保持する配列、タスクが存在しない場合は空の配列を返す
+ */
 function initializeTaskData(filePath){
    let tasks = [];
 
-   fs.readFile(filePath, 'utf8', function(err, data){
-      if (err) throw err;
-
-      let poutput = parse(data);
-      poutput.shift(); // delete header row
-      tasks = [];
-      for(let i = 0; i < poutput.length; i++){
-         let arr = poutput[i];
-         if (arr[6] === 'false') {
-            tasks.push({
-               detail: arr[0],
-               deadline: moment(new Date(arr[1], arr[2], arr[3], arr[4], arr[5]))
-            });
-         }
+   let csvString = fs.readFileSync(filePath, 'utf8');
+   let csvArray = parse(csvString);
+   csvArray.shift(); // delete header row
+   for(let i = 0; i < csvArray.length; i++){
+      let arr = csvArray[i];
+      if (arr[6] === 'false') {
+         tasks.push({
+            detail: arr[0],
+            deadline: moment(new Date(arr[1], arr[2], arr[3], arr[4], arr[5]))
+         });
       }
-      /*
-      parse(data, function(perr, poutput){
-         if (perr) throw perr;
+   }
 
-         poutput.shift(); // delete header row
-         tasks = [];
-         for(let i = 0; i < poutput.length; i++){
-            let arr = poutput[i];
-            if (arr[6] === 'false') {
-               tasks.push({
-                  detail: arr[0],
-                  deadline: moment(new Date(arr[1], arr[2], arr[3], arr[4], arr[5]))
-               });
-            }
-            console.log(tasks);
-         }
-         console.log(tasks);
-      });
-      console.log(tasks);
-      */
-   });
-
-   console.log(tasks);
    return tasks;
+}
+
+/**
+ * RendererProcess側でタスクのデータを取得するための関数
+ * @returns {Array} タスクを保持する配列、タスクが存在しない場合は空の配列を返す
+ */
+exports.getTasks = function(){
+   return taskData;
 }

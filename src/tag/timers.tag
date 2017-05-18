@@ -25,10 +25,7 @@
       let moment = require('moment');
       window.jquery = window.$ = require('jquery');
 
-      this.tasks = [
-         {detail: '打ち合わせ', deadline: moment(new Date(2017, 4, 18, 17, 30))},
-         {detail: '院試', deadline: moment(new Date(2017, 7, 23, 8, 0))}
-      ];
+      this.tasks = opts.tasks;
 
       this.remainingTime = function (deadline) {
          let nowDate = moment(new Date());
