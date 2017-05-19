@@ -126,7 +126,7 @@ function initializeTaskData(filePath){
       if (arr[6] === 'false') {
          tasks.push({
             detail: arr[0],
-            deadline: moment(new Date(arr[1], arr[2], arr[3], arr[4], arr[5]))
+            deadline: moment(new Date(arr[1], arr[2]-1, arr[3], arr[4], arr[5]))
          });
       }
    }

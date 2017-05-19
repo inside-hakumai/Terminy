@@ -54,6 +54,28 @@ html {
                   font-family: 'dseg', "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;;
                   line-height: 58px;
                   font-size: 40px;
+
+                  &:before {
+                     content: '残り';
+                     font-size: 40%;
+                     padding: 0 10px;
+                     border-radius: 10px;
+                     margin-right: 10px;
+                  }
+
+                  &.missed {
+                     color: red;
+
+                     &:before {
+                        content: '超過';
+                        background: red;
+                        color: rgba(255, 255, 255, 0.9);
+                        font-size: 40%;
+                        padding: 0 10px;
+                        border-radius: 10px;
+                        margin-right: 10px;
+                     }
+                  }
                }
             }
 
