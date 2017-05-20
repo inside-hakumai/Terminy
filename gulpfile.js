@@ -1,28 +1,25 @@
 let gulp = require('gulp');
 let sass = require('gulp-sass');
-let browserify = require('browserify');
-let riotify    = require('riotify');
-let webpack = require('webpack-stream');
-let source = require('vinyl-source-stream');
+let webpackStream = require('webpack-stream');
+let webpack = require('webpack');
+let cleanCSS = require('gulp-clean-css');
 
-// Sass compile
+let webpackConfig = require('./webpack.config.js');
+
+// local sass file compile
 gulp.task('sass', function () {
    gulp.src('./src/sass/*.scss')
       .pipe(sass({
          outputStyle: 'expanded'
       }))
+      .pipe(cleanCSS())
       .pipe(gulp.dest('./style'));
 });
 
+// bundle with Webpack
 gulp.task('js', function () {
-   browserify(['./src/js/script'])
-      .transform(riotify)
-      .bundle()
-      .pipe(source('bundle.js'))
-      .pipe(gulp.dest('./script'));
-
-   gulp.src(['./src/js/script-newtask.js'])
-      .pipe(webpack(require('./webpack.config.js')))
+   gulp.src(['./webpack.config.js', './src/js/script-newtask.js'])
+      .pipe(webpackStream(webpackConfig, webpack))
       .pipe(gulp.dest('./script'));
 });
 
