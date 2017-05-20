@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require('electron');
+const {app, Menu, BrowserWindow} = require('electron');
 const path = require('path');
 const url = require('url');
 
@@ -15,6 +15,9 @@ let taskData;
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
+
+// A window for dialog to create new task
+let dialogWindow
 
 function createWindow () {
    // Create the browser window.
@@ -33,7 +36,7 @@ function createWindow () {
       pathname: path.join(__dirname, 'index.html'),
       protocol: 'file:',
       slashes: true
-   }))
+   }));
 
    // Open the DevTools.
    // win.webContents.openDevTools()
@@ -50,7 +53,10 @@ function createWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', function() {
+   createWindow();
+   createMenu();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -140,4 +146,91 @@ function initializeTaskData(filePath){
  */
 exports.getTasks = function(){
    return taskData;
+}
+
+function createNewTaskDialog() {
+   // Create the browser window.
+   dialogWindow = new BrowserWindow({
+      width: 400,
+      height: 100,
+      frame: true,
+      resizable: false,
+      center: true,
+      hasShadow: false,
+      transparent: false
+   });
+
+   // and load the newTask.html of the app.
+   dialogWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'newtask.html'),
+      protocol: 'file:',
+      slashes: true
+   }));
+
+   // Open the DevTools.
+   dialogWindow.webContents.openDevTools()
+
+   // Emitted when the window is closed.
+   /*
+   win.on('closed', () => {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
+      win = null
+   })
+   */
+}
+
+
+/****************************/
+/*********** Menu ***********/
+
+function createMenu() {
+
+   const templeteMenu = [
+      {
+         label: app.getName(),
+         submenu: [
+            {role: 'about'},
+            {type: 'separator'},
+            {role: 'services', submenu: []},
+            {type: 'separator'},
+            {role: 'hide'},
+            {role: 'hideothers'},
+            {role: 'unhide'},
+            {type: 'separator'},
+            {role: 'quit'}
+         ]
+      },
+      {
+         label: 'Edit',
+         submenu: [
+            {
+               label: 'Create new task',
+               accelerator: 'Command+N',
+               click: function() { createNewTaskDialog(); }
+            },
+            {label: 'Cancel task'},
+            {label: 'Finish task'}
+         ]
+      },
+      {
+         label: 'View',
+         submenu: [
+            {
+               label: 'Reload',
+               accelerator: 'Command+R',
+               click: function() { win.reload(); }
+            },
+            {
+               label: 'Toggle Developer Tools',
+               accelerator: 'Alt+Command+I',
+               click: function() { win.toggleDevTools(); }
+            },
+         ]
+      }
+   ];
+
+   const menu = Menu.buildFromTemplate(templeteMenu);
+   Menu.setApplicationMenu(menu);
 }

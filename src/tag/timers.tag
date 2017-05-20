@@ -8,10 +8,10 @@
          <p class="edit-detail">{detail}</p>
          <p class="edit-date">
             <input type="text" name="dl-year" value='{deadline.format("YYYY")}'>年
-            <input type="text" name="dl-year" value='{deadline.format("M")}'>月
-            <input type="text" name="dl-year" value='{deadline.format("D")}'>日
-            <input type="text" name="dl-year" value='{deadline.format("H")}'>時
-            <input type="text" name="dl-year" value='{deadline.format("m")}'>分
+            <input type="text" name="dl-month" value='{deadline.format("M")}'>月
+            <input type="text" name="dl-day" value='{deadline.format("D")}'>日
+            <input type="text" name="dl-hour" value='{deadline.format("H")}'>時
+            <input type="text" name="dl-minute" value='{deadline.format("m")}'>分
          </p>
          <p class="buttons">
             <button class="done"><img src="./images/ic_done_black_24px.svg"></button>
