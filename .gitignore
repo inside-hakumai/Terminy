@@ -126,5 +126,5 @@ typings/
 
 # End of https://www.gitignore.io/api/node,intellij
 
-script/*
-style/*
+public/script/*
+public/style/*

@@ -6,7 +6,7 @@ module.exports = {
       'newtask': './src/js/script-newtask.js'
    },
    output: {
-      path: __dirname + "/script",
+      path: __dirname + "/public/script",
       filename: '[name]-bundle.js'
    },
    module: {

@@ -14,8 +14,8 @@
             <input type="text" name="dl-minute" value='{deadline.format("m")}'>分
          </p>
          <p class="buttons">
-            <button class="done"><img src="./images/ic_done_black_24px.svg"></button>
-            <button class="clear"><img src="./images/ic_clear_black_24px.svg"></button>
+            <button class="done"><img src="images/ic_done_black_24px.svg"></button>
+            <button class="clear"><img src="images/ic_clear_black_24px.svg"></button>
          </p>
       </div>
    </div>

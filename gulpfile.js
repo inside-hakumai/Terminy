@@ -13,14 +13,14 @@ gulp.task('sass', function () {
          outputStyle: 'expanded'
       }))
       .pipe(cleanCSS())
-      .pipe(gulp.dest('./style'));
+      .pipe(gulp.dest('./public/style'));
 });
 
 // bundle with Webpack
 gulp.task('js', function () {
    gulp.src(['./webpack.config.js', './src/js/script-newtask.js'])
       .pipe(webpackStream(webpackConfig, webpack))
-      .pipe(gulp.dest('./script'));
+      .pipe(gulp.dest('./public/script'));
 });
 
 gulp.task('default', ['js', 'sass']);

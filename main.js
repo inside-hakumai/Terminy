@@ -34,7 +34,7 @@ function createWindow () {
 
    // and load the index.html of the app.
    win.loadURL(url.format({
-      pathname: path.join(__dirname, 'index.html'),
+      pathname: path.join(__dirname, '/public/index.html'),
       protocol: 'file:',
       slashes: true
    }));
@@ -166,7 +166,7 @@ function createNewTaskDialog() {
 
    // and load the newTask.html of the app.
    dialogWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'newtask.html'),
+      pathname: path.join(__dirname, 'public/newtask.html'),
       protocol: 'file:',
       slashes: true
    }));
