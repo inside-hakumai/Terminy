@@ -1,6 +1,6 @@
 {
   "name": "DLWatcher",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {

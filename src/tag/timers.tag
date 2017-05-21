@@ -33,7 +33,6 @@
          }
       }
       this.tasks = tasks;
-      console.log(this.tasks[0].deadline.day());
 
       this.remainingTime = function (deadline) {
          let hasMissedDL = false;
@@ -61,7 +60,6 @@
 
       this.taskIsMissed = function (deadline) {
          let nowDate = moment(new Date());
-         console.log(deadline.diff(nowDate, 'seconds') < 0);
          return (deadline.diff(nowDate, 'seconds') < 0);
       }
 

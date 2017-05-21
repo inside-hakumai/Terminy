@@ -8,11 +8,17 @@
 </head>
 <body>
 
+<h1>タスクの新規追加</h1>
 <form>
-   <p id="p-detail"><label for="detail">詳細: </label><input type="text" id="detail" name="detail"></p>
+   <p id="p-detail">
+      <label for="detail">詳細: </label><input type="text" id="detail" name="detail">
+      <span class="alert"></span>
+   </p>
    <p id="p-deadline">
       <label>締切: </label><input id="dl-input" type="text" data-mindate=today>
+      <span class="alert"></span>
    </p>
+   <button type="button" id="submit">追加</button>
 </form>
 
 <script src="script/newtask-bundle.js"></script>

@@ -11,17 +11,59 @@ html {
    font-family: "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
 
    body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
+      margin: 35px;
+      width: calc(100% - 70px);
+      height: calc(100% - 70px);
       overflow: hidden;
 
-      form {
-         p#p-detail {
-            width: 200px;
+      h1 {
+         font-size: 25px;
+         display: block;
+
+         &:after {
+            content: "";
+            display: block;
+            border-top: 1px solid #aaa;
          }
-         p#p-deadline input {
-            width: 40px;
+      }
+
+      form {
+         width: 100%;
+         p {
+            width: 100%;
+            height: 70px;
+            margin-bottom: 20px;
+
+            label {
+               display: block;
+            }
+            input {
+               font-size: 12px;
+               height: 20px;
+               border: 1px solid #aaa;
+               border-radius: 4px;
+               display: block;
+            }
+            input#detail {
+               width: 100%;
+            }
+            span.alert {
+               color: #ff0000;
+               font-size: 13px;
+            }
+         }
+         button#submit {
+            width: 60px;
+            height: 30px;
+            border-radius: 5px;
+            border: none;
+            background: #23bd52;
+            color: #FFF;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+            display: block;
+            margin: auto 0 auto auto;
          }
       }
    }

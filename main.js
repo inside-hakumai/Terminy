@@ -10,6 +10,7 @@ const moment = require('moment');
 const APP_NAME = 'DLWatcher';
 const APP_NAME_LCASE = 'dlwatcher';
 
+// タスクの情報
 let taskData;
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -17,7 +18,7 @@ let taskData;
 let win;
 
 // A window for dialog to create new task
-let dialogWindow
+let dialogWindow;
 
 function createWindow () {
    // Create the browser window.
@@ -65,7 +66,7 @@ app.on('window-all-closed', () => {
    if (process.platform !== 'darwin') {
    app.quit()
 }
-})
+});
 
 app.on('activate', () => {
    // On macOS it's common to re-create a window in the app when the
@@ -73,7 +74,7 @@ app.on('activate', () => {
    if (win === null) {
    createWindow()
 }
-})
+});
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
@@ -146,13 +147,16 @@ function initializeTaskData(filePath){
  */
 exports.getTasks = function(){
    return taskData;
-}
+};
 
+/**
+ * タスクを新規作成するダイアログを作成する
+ */
 function createNewTaskDialog() {
    // Create the browser window.
    dialogWindow = new BrowserWindow({
-      width: 400,
-      height: 100,
+      width: 500,
+      height: 600,
       frame: true,
       resizable: false,
       center: true,
@@ -168,18 +172,47 @@ function createNewTaskDialog() {
    }));
 
    // Open the DevTools.
-   dialogWindow.webContents.openDevTools()
+   dialogWindow.webContents.openDevTools();
 
    // Emitted when the window is closed.
-   /*
-   win.on('closed', () => {
+   dialogWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
-      win = null
-   })
-   */
+      dialogWindow = null;
+   });
 }
+
+/**
+ * タスクを新規に追加する
+ * @param detail 詳細の文字列
+ * @param deadline 締め切りの日付・時刻の文字列
+ */
+exports.addNewTask = function(detail, deadline){
+   if (typeof detail !== 'string'){
+      throw new TypeError('The detail is not string');
+   } else if (detail === '') {
+      throw new Error('detail is empty')
+   }
+
+   let parsedDeadline = moment(deadline);
+   if (!parsedDeadline.isValid()){
+      throw new TypeError('Format of the deadline is invalid');
+   }
+
+   taskData.push({
+      detail: detail,
+      deadline: parsedDeadline
+   });
+};
+
+/**
+ * アプリケーションをリロードする
+ */
+exports.reload = function(){
+   dialogWindow.close();
+   win.reload();
+};
 
 
 /****************************/
