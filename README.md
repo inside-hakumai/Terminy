@@ -1,2 +1,2 @@
-# deadline-watcher
+# Terminy
 watch your deadlines

@@ -7,8 +7,8 @@ const fs = require('fs');
 const parse = require('csv-parse/lib/sync');
 const moment = require('moment');
 
-const APP_NAME = 'DLWatcher';
-const APP_NAME_LCASE = 'dlwatcher';
+const APP_NAME = 'Terminy';
+const APP_NAME_LCASE = 'terminy';
 
 // タスクの情報
 let taskData;
