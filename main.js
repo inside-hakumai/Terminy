@@ -99,7 +99,8 @@ function loadConfig(){
       } else {
          configData = data;
       }
-      taskData = initializeTaskData(data.savePath);
+
+      taskData = initializeTaskData(configData.savePath);
 
       win.webContents.on('did-finish-load', function() {
          win.webContents.send('ready-tasks');
@@ -125,7 +126,19 @@ function getInitialConfig(){
 function initializeTaskData(filePath){
    let tasks = [];
 
-   let csvString = fs.readFileSync(filePath, 'utf8');
+   let csvString;
+   try {
+      csvString = fs.readFileSync(filePath, 'utf8');
+
+   } catch(err) {
+      if (err.code == 'ENOENT') {
+         let sampleDate = moment().add(1, 'day');
+         csvString = '"taskName","year","month","day","hour","minute","isDone"\n' +
+            '"Sample Task",' + sampleDate.format("YYYY") + ',' + sampleDate.format('M') + ',' + sampleDate.format('D') + ',' + sampleDate.format('H') + ',' + sampleDate.format('m') + ',"false"';
+      } else {
+         throw err;
+      }
+   }
    let csvArray = parse(csvString);
    csvArray.shift(); // delete header row
    for(let i = 0; i < csvArray.length; i++){
