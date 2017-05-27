@@ -12,6 +12,10 @@ const APP_NAME_LCASE = 'terminy';
 
 // タスクの情報
 let taskData;
+let taskIdHead;
+
+// JSON config data
+let config;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -89,18 +93,16 @@ function loadConfig(){
    storage.get('config', function(error, data) {
       if (error) throw error;
 
-      let configData;
-
       if (Object.keys(data).length === 0){
-         configData = getInitialConfig();
-         storage.set('config', configData, function(error){
+         config = getInitialConfig();
+         storage.set('config', config, function(error){
             if (error) throw error;
          });
       } else {
-         configData = data;
+         config = data;
       }
 
-      taskData = initializeTaskData(configData.savePath);
+      taskData = initializeTaskData(config.savePath);
 
       win.webContents.on('did-finish-load', function() {
          win.webContents.send('ready-tasks');
@@ -129,12 +131,12 @@ function initializeTaskData(filePath){
    let csvString;
    try {
       csvString = fs.readFileSync(filePath, 'utf8');
-
    } catch(err) {
-      if (err.code == 'ENOENT') {
+      if (err.code === 'ENOENT') {
          let sampleDate = moment().add(1, 'day');
-         csvString = '"taskName","year","month","day","hour","minute","isDone"\n' +
-            '"Sample Task",' + sampleDate.format("YYYY") + ',' + sampleDate.format('M') + ',' + sampleDate.format('D') + ',' + sampleDate.format('H') + ',' + sampleDate.format('m') + ',"false"';
+         csvString = '"id","taskName","year","month","day","hour","minute","isDone"\n' +
+            '0,"Sample Task",' + sampleDate.format("YYYY") + ',' + sampleDate.format('M') + ',' + sampleDate.format('D') + ',' + sampleDate.format('H') + ',' + sampleDate.format('m') + ',"false"';
+         taskIdHead = 0;
       } else {
          throw err;
       }
@@ -143,11 +145,13 @@ function initializeTaskData(filePath){
    csvArray.shift(); // delete header row
    for(let i = 0; i < csvArray.length; i++){
       let arr = csvArray[i];
-      if (arr[6] === 'false') {
+      if (arr[7] === 'false') {
          tasks.push({
-            detail: arr[0],
-            deadline: moment(new Date(arr[1], arr[2]-1, arr[3], arr[4], arr[5]))
+            id: arr[0],
+            detail: arr[1],
+            deadline: moment(new Date(arr[2], arr[3]-1, arr[4], arr[5], arr[6]))
          });
+         taskIdHead = parseInt(arr[0]);
       }
    }
 
@@ -214,6 +218,7 @@ exports.addNewTask = function(detail, deadline){
    }
 
    taskData.push({
+      id: ++taskIdHead,
       detail: detail,
       deadline: parsedDeadline
    });
@@ -226,6 +231,26 @@ exports.reload = function(){
    dialogWindow.close();
    win.reload();
 };
+
+/**
+ * タスクデータをファイルに保存する
+ */
+function saveTask(){
+   let writeString = '"id","taskName","year","month","day","hour","minute","isDone"\n';
+   console.log(taskData);
+   for (let i = 0; i < taskData.length; i++){
+      writeString += [
+         taskData[i].id,
+         '"' + taskData[i].detail.replace('"', '""') + '"',
+         taskData[i].deadline.format('YYYY'),
+         taskData[i].deadline.format('M'),
+         taskData[i].deadline.format('D'),
+         taskData[i].deadline.format('H'),
+         taskData[i].deadline.format('m'),
+         '"false"'].join(',') + '\n'
+   }
+   fs.writeFile(config.savePath, writeString);
+}
 
 
 /****************************/
@@ -249,15 +274,27 @@ function createMenu() {
          ]
       },
       {
-         label: 'Edit',
+         label: 'File',
          submenu: [
             {
                label: 'Create new task',
                accelerator: 'Command+N',
                click: function() { createNewTaskDialog(); }
             },
+            {type: 'separator'},
             {label: 'Cancel task'},
-            {label: 'Finish task'}
+            {label: 'Finish task'},
+            {type: 'separator'},
+            {
+               label: 'Save',
+               accelerator: 'Command+S',
+               click: function() { saveTask(); }
+            },
+            {
+               label: 'Auto save(unimplemented)',
+               enabled: 'false'
+            }
+
          ]
       },
       {

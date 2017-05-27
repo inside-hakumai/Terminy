@@ -1,6 +1,6 @@
 {
   "name": "Terminy",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {
@@ -8,10 +8,13 @@
     "build": "gulp && electron ."
   },
   "author": "inside-hakumai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/inside-hakumai/Terminy.git"
+  },
   "license": "GPL-3.0",
   "dependencies": {
     "csv-parse": "^1.2.0",
-    "dotenv": "^4.0.0",
     "electron": "^1.6.2",
     "electron-json-storage": "^3.0.5",
     "flatpickr": "^2.6.1",
