@@ -1,6 +1,6 @@
 {
   "name": "Terminy",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {
