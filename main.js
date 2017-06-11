@@ -22,7 +22,7 @@ let config;
 let win;
 
 // A window for dialog to create new task
-let dialogWindow;
+let dialogWindow = null;
 
 function createWindow () {
    // Create the browser window.
@@ -170,6 +170,12 @@ exports.getTasks = function(){
  * タスクを新規作成するダイアログを作成する
  */
 function createNewTaskDialog() {
+
+   if (dialogWindow !== null){
+      console.info('Two dialogs can\'t be created at a time.');
+      return;
+   }
+
    // Create the browser window.
    dialogWindow = new BrowserWindow({
       width: 500,
@@ -177,7 +183,7 @@ function createNewTaskDialog() {
       frame: true,
       resizable: false,
       center: true,
-      hasShadow: false,
+      hasShadow: true,
       transparent: false
    });
 

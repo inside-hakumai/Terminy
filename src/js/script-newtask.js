@@ -6,7 +6,10 @@ const Flatpickr = require("flatpickr");
 require("flatpickr/dist/flatpickr.css");
 const main = window.require('electron').remote.require('./main');
 
-new Flatpickr(document.getElementById('dl-input'), {enableTime: true});
+new Flatpickr(document.getElementById('dl-input'), {
+   enableTime: true,
+   inline: true
+});
 
 $(function(){
    $('button#submit').on('click', function(){

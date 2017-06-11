@@ -1,10 +1,10 @@
-/** reset **/
-/***********/
+/*******************/
+/****** reset ******/
 p {
    margin: 0;
    display: block;
 }
-/***********/
+/*******************/
 
 html {
    height: 100%;
@@ -31,8 +31,11 @@ html {
          width: 100%;
          p {
             width: 100%;
-            height: 70px;
             margin-bottom: 20px;
+
+            &#p-deadline {
+               height: 365px;
+            }
 
             label {
                display: block;
@@ -43,6 +46,10 @@ html {
                border: 1px solid #aaa;
                border-radius: 4px;
                display: block;
+
+               &#dl-input {
+                 display: none;
+               }
             }
             input#detail {
                width: 100%;
@@ -50,6 +57,17 @@ html {
             span.alert {
                color: #ff0000;
                font-size: 13px;
+            }
+            div.flatpickr-calendar {
+               border: 1px solid #aaa;
+               box-shadow: none;
+
+               &:before {
+                  border: none;
+               }
+               &:after {
+                  display: none;
+               }
             }
          }
          button#submit {
