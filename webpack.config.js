@@ -1,9 +1,11 @@
 let webpack = require('webpack');
+let path = require('path');
 
 module.exports = {
    entry:  {
       'default': './src/js/script.js',
-      'newtask': './src/js/script-newtask.js'
+      'newtask': './src/js/script-newtask.js',
+      'preferences': './src/js/script-preferences.js',
    },
    output: {
       path: __dirname + "/public/script",
@@ -32,7 +34,10 @@ module.exports = {
       ]
    },
    resolve: {
-      modules: ["node_modules"]
+      modules: [
+         "node_modules",
+         path.resolve(__dirname, "src/js"),
+      ]
    },
    plugins: [
       new webpack.ProvidePlugin({

@@ -18,8 +18,7 @@ gulp.task('sass', function () {
 
 // bundle with Webpack
 gulp.task('js', function () {
-   gulp.src(['./webpack.config.js', './src/js/script-newtask.js'])
-      .pipe(webpackStream(webpackConfig, webpack))
+   return webpackStream(webpackConfig, webpack)
       .pipe(gulp.dest('./public/script'));
 });
 

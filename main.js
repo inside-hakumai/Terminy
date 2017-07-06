@@ -23,6 +23,9 @@ let win;
 
 // A window for dialog to create new task
 let dialogWindow = null;
+// A window for preferences
+let preferenceWindow = null;
+
 // store BrowserWindow object of currently focused window
 let focusedWindow = null
 
@@ -172,6 +175,14 @@ exports.getTasks = function(){
    return taskData;
 };
 
+exports.getConfig = function(key = null){
+   if (key) {
+      return config[key];
+   } else {
+      return config;
+   }
+};
+
 /**
  * タスクを新規作成するダイアログを作成する
  */
@@ -241,6 +252,48 @@ exports.addNewTask = function(detail, deadline){
 };
 
 /**
+ * 設定画面を作成する
+ */
+function createPrefrenceWindow(){
+   if (preferenceWindow !== null){
+      console.info('Two dialogs can\'t be created at a time.');
+      return;
+   }
+
+   // Create the browser window.
+   preferenceWindow = new BrowserWindow({
+      width: 750,
+      height: 600,
+      frame: true,
+      resizable: true,
+      center: true,
+      hasShadow: true,
+      transparent: false
+   });
+
+   // and load the newTask.html of the app.
+   preferenceWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'public/preferences.html'),
+      protocol: 'file:',
+      slashes: true
+   }));
+
+   preferenceWindow.on('focus', () => {
+      focusedWindow = preferenceWindow;
+   });
+   focusedWindow = preferenceWindow;
+
+   // Emitted when the window is closed.
+   preferenceWindow.on('closed', () => {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
+      preferenceWindow = null;
+   });
+
+}
+
+/**
  * アプリケーションをリロードする
  */
 exports.reload = function(){
@@ -279,6 +332,12 @@ function createMenu() {
          label: app.getName(),
          submenu: [
             {role: 'about'},
+            {type: 'separator'},
+            {
+               label: 'Preferences',
+               accelerator: 'Command+,',
+               click: function() { createPrefrenceWindow(); }
+            },
             {type: 'separator'},
             {role: 'services', submenu: []},
             {type: 'separator'},
