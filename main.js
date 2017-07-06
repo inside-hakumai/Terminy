@@ -23,6 +23,8 @@ let win;
 
 // A window for dialog to create new task
 let dialogWindow = null;
+// store BrowserWindow object of currently focused window
+let focusedWindow = null
 
 function createWindow () {
    // Create the browser window.
@@ -45,6 +47,10 @@ function createWindow () {
 
    // Open the DevTools.
    // win.webContents.openDevTools()
+
+   win.on('focus', () => {
+      focusedWindow = win
+   });
 
    // Emitted when the window is closed.
    win.on('closed', () => {
@@ -197,6 +203,10 @@ function createNewTaskDialog() {
    // Open the DevTools.
    dialogWindow.webContents.openDevTools();
 
+   dialogWindow.on('focus', () => {
+      focusedWindow = dialogWindow;
+   });
+
    // Emitted when the window is closed.
    dialogWindow.on('closed', () => {
       // Dereference the window object, usually you would store windows
@@ -314,7 +324,7 @@ function createMenu() {
             {
                label: 'Toggle Developer Tools',
                accelerator: 'Alt+Command+I',
-               click: function() { win.toggleDevTools(); }
+               click: function() { focusedWindow.toggleDevTools(); }
             },
          ]
       }
