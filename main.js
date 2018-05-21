@@ -1,4 +1,11 @@
-const {app, Menu, BrowserWindow} = require('electron');
+const electron = require('electron');
+// Module to control application life.
+const app = electron.app;
+// Module to create native browser window.
+const BrowserWindow = electron.BrowserWindow;
+
+const Menu = electron.Menu;
+
 const path = require('path');
 const url = require('url');
 
@@ -19,7 +26,7 @@ let config;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win;
+let mainWindow;
 
 // A window for dialog to create new task
 let dialogWindow = null;
@@ -27,11 +34,11 @@ let dialogWindow = null;
 let preferenceWindow = null;
 
 // store BrowserWindow object of currently focused window
-let focusedWindow = null
+let focusedWindow = null;
 
-function createWindow () {
+function createWindow() {
    // Create the browser window.
-   win = new BrowserWindow({
+   mainWindow = new BrowserWindow({
       width: 350,
       height: 108,
       frame: false,
@@ -42,25 +49,25 @@ function createWindow () {
    });
 
    // and load the index.html of the app.
-   win.loadURL(url.format({
+   mainWindow.loadURL(url.format({
       pathname: path.join(__dirname, '/public/index.html'),
       protocol: 'file:',
       slashes: true
    }));
 
    // Open the DevTools.
-   // win.webContents.openDevTools()
+   // mainWindow.webContents.openDevTools()
 
-   win.on('focus', () => {
-      focusedWindow = win
+   mainWindow.on('focus', () => {
+      focusedWindow = mainWindow;
    });
 
    // Emitted when the window is closed.
-   win.on('closed', () => {
+   mainWindow.on('closed', function () {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
-      win = null
+      mainWindow = null
    })
 }
 
@@ -73,20 +80,20 @@ app.on('ready', function() {
 });
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
-   // On macOS it is common for applications and their menu bar
+app.on('window-all-closed', function () {
+   // On OS X it is common for applications and their menu bar
    // to stay active until the user quits explicitly with Cmd + Q
    if (process.platform !== 'darwin') {
-   app.quit()
-}
+      app.quit()
+   }
 });
 
-app.on('activate', () => {
-   // On macOS it's common to re-create a window in the app when the
+app.on('activate', function () {
+   // On OS X it's common to re-create a window in the app when the
    // dock icon is clicked and there are no other windows open.
-   if (win === null) {
-   createWindow()
-}
+   if (mainWindow === null) {
+      createWindow()
+   }
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -113,8 +120,8 @@ function loadConfig(){
 
       taskData = initializeTaskData(config.savePath);
 
-      win.webContents.on('did-finish-load', function() {
-         win.webContents.send('ready-tasks');
+      mainWindow.webContents.on('did-finish-load', function() {
+         mainWindow.webContents.send('ready-tasks');
       });
    });
 }
@@ -298,7 +305,7 @@ function createPrefrenceWindow(){
  */
 exports.reload = function(){
    dialogWindow.close();
-   win.reload();
+   mainWindow.reload();
 };
 
 /**
