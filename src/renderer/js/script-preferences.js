@@ -1,5 +1,7 @@
 'use strict';
 
+import '../sass/preferences-style.scss';
+
 window.jquery = window.$ = require('jquery');
 let main = window.require('electron').remote.require('./main');
 let config;

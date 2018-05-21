@@ -1,5 +1,7 @@
 'use strict';
 
+import '../sass/dialog-style.scss';
+
 window.jquery = window.$ = require('jquery');
 const moment = require('moment');
 const Flatpickr = require("flatpickr");

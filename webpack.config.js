@@ -1,18 +1,42 @@
 let webpack = require('webpack');
 let path = require('path');
 
+const MODE = 'development';
+const enabledSourceMap = (MODE === 'development');
+
+
 module.exports = {
    entry:  {
-      'default': './src/js/script.js',
-      'newtask': './src/js/script-newtask.js',
-      'preferences': './src/js/script-preferences.js',
+      'default': './src/renderer/js/script.js',
+      'newtask': './src/renderer/js/script-newtask.js',
+      'preferences': './src/renderer/js/script-preferences.js',
    },
    output: {
-      path: __dirname + "/public/script",
+      path: __dirname + "/renderer/script",
       filename: '[name]-bundle.js'
    },
    module: {
       rules: [
+         {
+            test: /\.scss/,
+            use: [
+               'style-loader',
+               {
+                  loader: 'css-loader',
+                  options: {
+                     url: true,
+                     sourceMap: enabledSourceMap,
+                     importLoaders: 2
+                  },
+               },
+               {
+                  loader: 'sass-loader',
+                  options: {
+                     sourceMap: enabledSourceMap,
+                  }
+               }
+            ]
+         },
          {
             test: /\.tag$/,
             exclude: /node_modules/,
@@ -30,13 +54,17 @@ module.exports = {
             query: {
                presets: ['es2015', 'es2015-riot']
             }
-         }
+         },
+         {
+            test: /\.svg$/,
+            loader: 'url-loader'
+         },
       ]
    },
    resolve: {
       modules: [
          "node_modules",
-         path.resolve(__dirname, "src/js"),
+         path.resolve(__dirname, "src/renderer/js"),
       ]
    },
    plugins: [
