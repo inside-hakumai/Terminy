@@ -1,0 +1,5 @@
+{
+  "globalDependencies": {
+    "electron": "file:node_modules/electron/electron.d.ts"
+  }
+}

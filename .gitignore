@@ -96,7 +96,7 @@ bower_components
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+main/Release
 
 # Dependency directories
 node_modules/
@@ -126,5 +126,6 @@ typings/
 
 # End of https://www.gitignore.io/api/node,intellij
 
-public/script/*
-public/style/*
+renderer/script/*
+renderer/style/*
+main/*
