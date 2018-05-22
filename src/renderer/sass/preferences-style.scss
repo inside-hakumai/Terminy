@@ -1,0 +1,105 @@
+$color-white: #FFFFFF;
+$color-green: #16A085;
+$color-light-green: rgba(22, 160, 133, 0.1);
+$color-grey: #808080;
+
+h1, h2, h3, h4, h5, h6, p, div, ul, li {
+   margin: 0;
+   display: block;
+}
+
+input[type="text"] {
+   outline: none;
+   height: 25px;
+   width: calc(100% - 70px);
+   margin-top: 10px;
+   border-radius: 5px;
+   border: 1px solid $color-grey;
+   font-size: 12px;
+
+   &:focus {
+      border-color: $color-green;
+   }
+}
+
+button {
+   outline: none;
+   width: 60px;
+   height: 30px;
+   background: $color-light-green;
+   border: 1px solid $color-green;
+   border-radius: 5px;
+   font-size: 13px;
+
+   &:hover {
+      cursor: pointer;
+      background: $color-white;
+      color: $color-green;
+   }
+}
+
+html {
+   font-family: "Rounded Mplus 1c", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, "ヒラギノ角ゴ ProN W3", Hiragino Kaku Gothic ProN, Arial, "メイリオ", Meiryo, sans-serif;
+
+   body {
+      margin: 0;
+
+      h1, h2, h3, li {
+         letter-spacing: normal;
+      }
+
+      h1 {
+         padding: 8px;
+         background: #F4F5F6;
+         border-bottom: #D1D1D1;
+         font-size: 20px;
+      }
+
+      #inner {
+         width: 700px;
+         margin: 40px auto;
+
+         #submenu {
+            width: 140px;
+            float: left;
+            padding: 0;
+            margin-right: 10px;
+
+            .submenu-item {
+               list-style-type: none;
+               padding-left: 10px;
+               margin-bottom: 5px;
+               font-size: 15px;
+               border-radius: 10px;
+
+               &:hover {
+                  background: $color-light-green;
+                  cursor: pointer;
+               }
+
+               &.focused {
+                  background: $color-green;
+                  color: $color-white;
+               }
+            }
+         }
+
+         #main {
+            margin-left: 170px;
+
+            .main-part {
+               display: none;
+
+               &.active {
+                  display:block;
+               }
+               h3 {
+                  font-size: 16px;
+               }
+            }
+
+         }
+      }
+
+   }
+}

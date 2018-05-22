@@ -1,12 +1,17 @@
+/// <reference path="../../../typings/index.d.ts" />
 'use strict';
 
-window.jquery = window.$ = require('jquery');
+import '../sass/dialog-style.scss';
+
 const moment = require('moment');
 const Flatpickr = require("flatpickr");
 require("flatpickr/dist/flatpickr.css");
-const main = window.require('electron').remote.require('./main');
+const main = require('electron').remote.require('./main');
 
-new Flatpickr(document.getElementById('dl-input'), {enableTime: true});
+new Flatpickr(document.getElementById('dl-input'), {
+   enableTime: true,
+   inline: true
+});
 
 $(function(){
    $('button#submit').on('click', function(){

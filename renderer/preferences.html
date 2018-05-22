@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <meta charset="UTF-8">
+   <title>Preferences</title>
+   <link href="https://fonts.googleapis.com/earlyaccess/roundedmplus1c.css" rel="stylesheet" />
+   <!-- <link rel="stylesheet" href="style/preferences-style.css"> -->
+</head>
+<body>
+
+<h1>Preferences</h1>
+<div id="inner">
+   <ul id="submenu">
+      <li id="submenu-general" class="submenu-item focused" data-ref="general">General</li>
+      <li id="submenu-menubar" class="submenu-item" data-ref="menubar">MenuBar</li>
+   </ul>
+
+   <div id="main">
+      <div class="main-part active" id="main-general">
+         <h3>Location of file storing task data</h3>
+         <input type="text" id="input-save-path">
+         <button type="button">------</button>
+      </div>
+      <div class="main-part" id="main-menubar">
+         <h3>Hoge</h3>
+      </div>
+   </div>
+</div>
+
+<script src="script/preferences-bundle.js"></script>
+
+</body>
+</html>

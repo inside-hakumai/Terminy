@@ -1,21 +1,56 @@
 let webpack = require('webpack');
+let path = require('path');
 
-module.exports = {
-   entry:  {
-      'default': './src/js/script.js',
-      'newtask': './src/js/script-newtask.js'
-   },
-   output: {
-      path: __dirname + "/public/script",
-      filename: '[name]-bundle.js'
-   },
+const MODE = 'development';
+const enabledSourceMap = (MODE === 'development');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
+let commonConfig = module.exports = {
    module: {
       rules: [
+         {
+            test: /\/.ts$/,
+            use: [
+               {
+                  loader: 'babel-loader',
+                  options: {
+                     sourceMap: enabledSourceMap,
+                     presets: ['es2015'],
+                  }
+               },
+               'ts-loader'
+            ],
+         },
+         {
+            test: /\.scss/,
+            use: [
+               'style-loader',
+               {
+                  loader: 'css-loader',
+                  options: {
+                     url: true,
+                     sourceMap: enabledSourceMap,
+                     importLoaders: 2
+                  },
+               },
+               {
+                  loader: 'sass-loader',
+                  options: {
+                     sourceMap: enabledSourceMap,
+                  }
+               }
+            ]
+         },
          {
             test: /\.tag$/,
             exclude: /node_modules/,
             loader: 'riotjs-loader',
             enforce: 'pre'
+         },
+         {
+            test: /\.js$/,
+            enforce: "pre",
+            loader: "source-map-loader"
          },
          {
             test: /\.css$/,
@@ -28,16 +63,55 @@ module.exports = {
             query: {
                presets: ['es2015', 'es2015-riot']
             }
-         }
+         },
+         {
+            test: /\.svg$/,
+            loader: 'url-loader'
+         },
       ]
    },
    resolve: {
-      modules: ["node_modules"]
+      modules: [
+         "node_modules",
+         path.resolve(__dirname, "src/renderer/js"),
+      ]
    },
    plugins: [
       new webpack.ProvidePlugin({
-         riot: 'riot'
+         riot: 'riot',
+         $: 'jquery',
+         jQuery: "jquery",
       }),
-      new webpack.optimize.UglifyJsPlugin()
-   ]
+      new UglifyJsPlugin(),
+   ],
+   devtool: 'cheap-module-eval-source-map',
 };
+
+module.exports = [
+   Object.assign({}, commonConfig, {
+      target: 'electron-renderer',
+      entry:  {
+         'default': './src/renderer/js/script.ts',
+         'newtask': './src/renderer/js/script-newtask.ts',
+         'preferences': './src/renderer/js/script-preferences.ts',
+      },
+      output: {
+         path: __dirname + "/renderer/script",
+         filename: '[name]-bundle.js'
+      },
+   }),
+   Object.assign({}, commonConfig, {
+      target: 'electron-main',
+      entry:  {
+         'default': './src/main/main.ts',
+      },
+      output: {
+         path: __dirname + "/main",
+         filename: 'main.js'
+      },
+      node: {
+         __dirname: false,
+         __filename: false,
+      },
+   })
+];

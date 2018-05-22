@@ -1,4 +1,11 @@
-const {app, Menu, BrowserWindow} = require('electron');
+const electron = require('electron');
+// Module to control application life.
+const app = electron.app;
+// Module to create native browser window.
+const BrowserWindow = electron.BrowserWindow;
+
+const Menu = electron.Menu;
+
 const path = require('path');
 const url = require('url');
 
@@ -19,14 +26,19 @@ let config;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win;
+let mainWindow;
 
 // A window for dialog to create new task
-let dialogWindow;
+let dialogWindow = null;
+// A window for preferences
+let preferenceWindow = null;
 
-function createWindow () {
+// store BrowserWindow object of currently focused window
+let focusedWindow = null;
+
+function createWindow() {
    // Create the browser window.
-   win = new BrowserWindow({
+   mainWindow = new BrowserWindow({
       width: 350,
       height: 108,
       frame: false,
@@ -37,21 +49,25 @@ function createWindow () {
    });
 
    // and load the index.html of the app.
-   win.loadURL(url.format({
+   mainWindow.loadURL(url.format({
       pathname: path.join(__dirname, '/public/index.html'),
       protocol: 'file:',
       slashes: true
    }));
 
    // Open the DevTools.
-   // win.webContents.openDevTools()
+   // mainWindow.webContents.openDevTools()
+
+   mainWindow.on('focus', () => {
+      focusedWindow = mainWindow;
+   });
 
    // Emitted when the window is closed.
-   win.on('closed', () => {
+   mainWindow.on('closed', function () {
       // Dereference the window object, usually you would store windows
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
-      win = null
+      mainWindow = null
    })
 }
 
@@ -64,20 +80,20 @@ app.on('ready', function() {
 });
 
 // Quit when all windows are closed.
-app.on('window-all-closed', () => {
-   // On macOS it is common for applications and their menu bar
+app.on('window-all-closed', function () {
+   // On OS X it is common for applications and their menu bar
    // to stay active until the user quits explicitly with Cmd + Q
    if (process.platform !== 'darwin') {
-   app.quit()
-}
+      app.quit()
+   }
 });
 
-app.on('activate', () => {
-   // On macOS it's common to re-create a window in the app when the
+app.on('activate', function () {
+   // On OS X it's common to re-create a window in the app when the
    // dock icon is clicked and there are no other windows open.
-   if (win === null) {
-   createWindow()
-}
+   if (mainWindow === null) {
+      createWindow()
+   }
 });
 
 // In this file you can include the rest of your app's specific main process
@@ -104,8 +120,8 @@ function loadConfig(){
 
       taskData = initializeTaskData(config.savePath);
 
-      win.webContents.on('did-finish-load', function() {
-         win.webContents.send('ready-tasks');
+      mainWindow.webContents.on('did-finish-load', function() {
+         mainWindow.webContents.send('ready-tasks');
       });
    });
 }
@@ -166,10 +182,24 @@ exports.getTasks = function(){
    return taskData;
 };
 
+exports.getConfig = function(key = null){
+   if (key) {
+      return config[key];
+   } else {
+      return config;
+   }
+};
+
 /**
  * タスクを新規作成するダイアログを作成する
  */
 function createNewTaskDialog() {
+
+   if (dialogWindow !== null){
+      console.info('Two dialogs can\'t be created at a time.');
+      return;
+   }
+
    // Create the browser window.
    dialogWindow = new BrowserWindow({
       width: 500,
@@ -177,7 +207,7 @@ function createNewTaskDialog() {
       frame: true,
       resizable: false,
       center: true,
-      hasShadow: false,
+      hasShadow: true,
       transparent: false
    });
 
@@ -190,6 +220,10 @@ function createNewTaskDialog() {
 
    // Open the DevTools.
    dialogWindow.webContents.openDevTools();
+
+   dialogWindow.on('focus', () => {
+      focusedWindow = dialogWindow;
+   });
 
    // Emitted when the window is closed.
    dialogWindow.on('closed', () => {
@@ -225,11 +259,53 @@ exports.addNewTask = function(detail, deadline){
 };
 
 /**
+ * 設定画面を作成する
+ */
+function createPrefrenceWindow(){
+   if (preferenceWindow !== null){
+      console.info('Two dialogs can\'t be created at a time.');
+      return;
+   }
+
+   // Create the browser window.
+   preferenceWindow = new BrowserWindow({
+      width: 750,
+      height: 600,
+      frame: true,
+      resizable: true,
+      center: true,
+      hasShadow: true,
+      transparent: false
+   });
+
+   // and load the newTask.html of the app.
+   preferenceWindow.loadURL(url.format({
+      pathname: path.join(__dirname, 'public/preferences.html'),
+      protocol: 'file:',
+      slashes: true
+   }));
+
+   preferenceWindow.on('focus', () => {
+      focusedWindow = preferenceWindow;
+   });
+   focusedWindow = preferenceWindow;
+
+   // Emitted when the window is closed.
+   preferenceWindow.on('closed', () => {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
+      preferenceWindow = null;
+   });
+
+}
+
+/**
  * アプリケーションをリロードする
  */
 exports.reload = function(){
    dialogWindow.close();
-   win.reload();
+   mainWindow.reload();
 };
 
 /**
@@ -263,6 +339,12 @@ function createMenu() {
          label: app.getName(),
          submenu: [
             {role: 'about'},
+            {type: 'separator'},
+            {
+               label: 'Preferences',
+               accelerator: 'Command+,',
+               click: function() { createPrefrenceWindow(); }
+            },
             {type: 'separator'},
             {role: 'services', submenu: []},
             {type: 'separator'},
@@ -308,7 +390,7 @@ function createMenu() {
             {
                label: 'Toggle Developer Tools',
                accelerator: 'Alt+Command+I',
-               click: function() { win.toggleDevTools(); }
+               click: function() { focusedWindow.toggleDevTools(); }
             },
          ]
       }
