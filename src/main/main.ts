@@ -1,4 +1,8 @@
+/// <reference path="../../typings/index.d.ts" />
+
 const electron = require('electron');
+
+const ipcMain = electron.ipcMain;
 
 // Module to control application life.
 const app = electron.app;
@@ -46,22 +50,18 @@ function createWindow() {
       resizable: false,
       center: false,
       hasShadow: false,
-      transparent: true
+      transparent: true,
    });
 
    // and load the index.html of the app.
-   mainWindow.loadURL(url.format({
-      pathname: path.join(__dirname, '/public/index.html'),
-      protocol: 'file:',
-      slashes: true
-   }));
+   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 
    // Open the DevTools.
    // mainWindow.webContents.openDevTools()
 
    mainWindow.on('focus', () => {
       focusedWindow = mainWindow;
-   });
+   });   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 
    // Emitted when the window is closed.
    mainWindow.on('closed', function () {
@@ -69,6 +69,10 @@ function createWindow() {
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
       mainWindow = null
+   })
+
+   ipcMain.on('task-request', (event, arg) => {
+      event.sender.send('send-task', getTasks());
    })
 }
 
@@ -166,7 +170,7 @@ function initializeTaskData(filePath){
          tasks.push({
             id: arr[0],
             detail: arr[1],
-            deadline: moment(new Date(arr[2], arr[3]-1, arr[4], arr[5], arr[6]))
+            deadline: moment(new Date(arr[2], arr[3]-1, arr[4], arr[5], arr[6])).toDate()
          });
          taskIdHead = parseInt(arr[0]);
       }
@@ -179,9 +183,9 @@ function initializeTaskData(filePath){
  * RendererProcess側でタスクのデータを取得するための関数
  * @returns {Array} タスクを保持する配列、タスクが存在しない場合は空の配列を返す
  */
-exports.getTasks = function(){
+function getTasks(){
    return taskData;
-};
+}
 
 exports.getConfig = function(key = null){
    if (key) {
@@ -213,11 +217,7 @@ function createNewTaskDialog() {
    });
 
    // and load the newTask.html of the app.
-   dialogWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'public/newtask.html'),
-      protocol: 'file:',
-      slashes: true
-   }));
+   dialogWindow.loadURL(`file://${__dirname}/../renderer/newtask.html`);
 
    // Open the DevTools.
    dialogWindow.webContents.openDevTools();
@@ -280,11 +280,7 @@ function createPrefrenceWindow(){
    });
 
    // and load the newTask.html of the app.
-   preferenceWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'public/preferences.html'),
-      protocol: 'file:',
-      slashes: true
-   }));
+   preferenceWindow.loadURL(path.join(__dirname, 'public/preferences.html'));
 
    preferenceWindow.on('focus', () => {
       focusedWindow = preferenceWindow;

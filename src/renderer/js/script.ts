@@ -1,18 +1,21 @@
+/// <reference path="../../../typings/index.d.ts" />
 'use strict';
 
 import '../sass/style.scss';
+import {ipcRenderer, remote} from 'electron';
 
-window.jquery = window.$ = require('jquery');
-let main = window.require('electron').remote.require('./main');
 let riot = require('riot');
 require('../tag/timers.tag');
-let tasks = [];
 
 $(document).ready(function(){
-   window.require('electron').ipcRenderer.on('ready-tasks', function(){
-      let tasks = main.getTasks();
+   ipcRenderer.on('ready-tasks', function(){
+      ipcRenderer.send("task-request");
+   });
+
+   ipcRenderer.on('send-task', function(evt, tasks) {
       let windowHeight = tasks.length*98 + tasks.length-1;
       window.resizeTo(350, windowHeight);
       riot.mount('timers', {tasks: tasks});
    });
 });
+

@@ -1,12 +1,12 @@
+/// <reference path="../../../typings/index.d.ts" />
 'use strict';
 
 import '../sass/dialog-style.scss';
 
-window.jquery = window.$ = require('jquery');
 const moment = require('moment');
 const Flatpickr = require("flatpickr");
 require("flatpickr/dist/flatpickr.css");
-const main = window.require('electron').remote.require('./main');
+const main = require('electron').remote.require('./main');
 
 new Flatpickr(document.getElementById('dl-input'), {
    enableTime: true,

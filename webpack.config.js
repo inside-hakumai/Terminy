@@ -3,20 +3,24 @@ let path = require('path');
 
 const MODE = 'development';
 const enabledSourceMap = (MODE === 'development');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-
-module.exports = {
-   entry:  {
-      'default': './src/renderer/js/script.js',
-      'newtask': './src/renderer/js/script-newtask.js',
-      'preferences': './src/renderer/js/script-preferences.js',
-   },
-   output: {
-      path: __dirname + "/renderer/script",
-      filename: '[name]-bundle.js'
-   },
+let commonConfig = module.exports = {
    module: {
       rules: [
+         {
+            test: /\/.ts$/,
+            use: [
+               {
+                  loader: 'babel-loader',
+                  options: {
+                     sourceMap: enabledSourceMap,
+                     presets: ['es2015'],
+                  }
+               },
+               'ts-loader'
+            ],
+         },
          {
             test: /\.scss/,
             use: [
@@ -44,6 +48,11 @@ module.exports = {
             enforce: 'pre'
          },
          {
+            test: /\.js$/,
+            enforce: "pre",
+            loader: "source-map-loader"
+         },
+         {
             test: /\.css$/,
             loaders: ['style-loader', 'css-loader']
          },
@@ -69,8 +78,40 @@ module.exports = {
    },
    plugins: [
       new webpack.ProvidePlugin({
-         riot: 'riot'
+         riot: 'riot',
+         $: 'jquery',
+         jQuery: "jquery",
       }),
-      new webpack.optimize.UglifyJsPlugin()
-   ]
+      new UglifyJsPlugin(),
+   ],
+   devtool: 'cheap-module-eval-source-map',
 };
+
+module.exports = [
+   Object.assign({}, commonConfig, {
+      target: 'electron-renderer',
+      entry:  {
+         'default': './src/renderer/js/script.ts',
+         'newtask': './src/renderer/js/script-newtask.ts',
+         'preferences': './src/renderer/js/script-preferences.ts',
+      },
+      output: {
+         path: __dirname + "/renderer/script",
+         filename: '[name]-bundle.js'
+      },
+   }),
+   Object.assign({}, commonConfig, {
+      target: 'electron-main',
+      entry:  {
+         'default': './src/main/main.ts',
+      },
+      output: {
+         path: __dirname + "/main",
+         filename: 'main.js'
+      },
+      node: {
+         __dirname: false,
+         __filename: false,
+      },
+   })
+];
