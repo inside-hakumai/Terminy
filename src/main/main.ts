@@ -13,7 +13,7 @@ const Menu = electron.Menu;
 
 const path = require('path');
 const url = require('url');
-
+const mkdirp = require('mkdirp');
 const storage = require('electron-json-storage');
 const fs = require('fs');
 const parse = require('csv-parse/lib/sync');
@@ -124,6 +124,8 @@ function loadConfig(){
       }
 
       taskData = initializeTaskData(config.savePath);
+
+      saveTask();
 
       mainWindow.webContents.on('did-finish-load', function() {
          mainWindow.webContents.send('ready-tasks');
@@ -261,6 +263,7 @@ function addNewTask(detail, deadline){
 
 ipcMain.on('register-task', function( event, arg ){
    addNewTask(arg.title, arg.date);
+   saveTask();
    reload();
 });
 
@@ -318,17 +321,34 @@ function saveTask(){
    let writeString = '"id","taskName","year","month","day","hour","minute","isDone"\n';
    console.log(taskData);
    for (let i = 0; i < taskData.length; i++){
+      const deadlineMoment = moment(taskData[i].deadline);
       writeString += [
          taskData[i].id,
          '"' + taskData[i].detail.replace('"', '""') + '"',
-         taskData[i].deadline.format('YYYY'),
-         taskData[i].deadline.format('M'),
-         taskData[i].deadline.format('D'),
-         taskData[i].deadline.format('H'),
-         taskData[i].deadline.format('m'),
+         deadlineMoment.format('YYYY'),
+         deadlineMoment.format('M'),
+         deadlineMoment.format('D'),
+         deadlineMoment.format('H'),
+         deadlineMoment.format('m'),
          '"false"'].join(',') + '\n'
    }
-   fs.writeFile(config.savePath, writeString);
+
+   function ensureDirectoryExistence(filePath) {
+      var dirname = path.dirname(filePath);
+      if (fs.existsSync(dirname)) {
+         return true;
+      }
+      ensureDirectoryExistence(dirname);
+      fs.mkdirSync(dirname);
+   }
+
+   mkdirp(path.dirname(config.savePath), function (err) {
+      if (err) {
+         console.error(err)
+      } else {
+         fs.writeFile(config.savePath, writeString);
+      }
+   });
 }
 
 
