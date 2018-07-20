@@ -240,7 +240,7 @@ function createNewTaskDialog() {
  * @param detail 詳細の文字列
  * @param deadline 締め切りの日付・時刻の文字列
  */
-exports.addNewTask = function(detail, deadline){
+function addNewTask(detail, deadline){
    if (typeof detail !== 'string'){
       throw new TypeError('The detail is not string');
    } else if (detail === '') {
@@ -255,9 +255,15 @@ exports.addNewTask = function(detail, deadline){
    taskData.push({
       id: ++taskIdHead,
       detail: detail,
-      deadline: parsedDeadline
+      deadline: parsedDeadline.toISOString()
    });
 };
+
+ipcMain.on('register-task', function( event, arg ){
+   addNewTask(arg.title, arg.date);
+   reload();
+});
+
 
 /**
  * 設定画面を作成する
@@ -300,10 +306,10 @@ function createPrefrenceWindow(){
 /**
  * アプリケーションをリロードする
  */
-exports.reload = function(){
+function reload(){
    dialogWindow.close();
    mainWindow.reload();
-};
+}
 
 /**
  * タスクデータをファイルに保存する

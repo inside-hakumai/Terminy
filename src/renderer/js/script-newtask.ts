@@ -7,6 +7,7 @@ const moment = require('moment');
 const Flatpickr = require("flatpickr");
 require("flatpickr/dist/flatpickr.css");
 const main = require('electron').remote.require('./main');
+const ipcRenderer = require('electron').ipcRenderer;
 
 new Flatpickr(document.getElementById('dl-input'), {
    enableTime: true,
@@ -36,8 +37,12 @@ $(function(){
       }
 
       if (inputIsValid) {
-         main.addNewTask(inputDetail, inputDate);
-         main.reload();
+         // main.addNewTask(inputDetail, inputDate);
+         // main.reload();
+         ipcRenderer.send("register-task", {
+            title: inputDetail,
+            date: inputDate
+         });
       }
 
    });
