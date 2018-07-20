@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack -d && npm run start",
-    "start": "electron main/main.js"
+    "start": "electron main/main.js",
+    "fetch-typings": "npx typings install"
   },
   "author": "inside-hakumai",
   "repository": {
@@ -36,6 +37,7 @@
     "source-map-loader": "^0.2.3",
     "style-loader": "^0.17.0",
     "typescript": "^2.8.3",
+    "typings": "^2.1.1",
     "uglifyjs-webpack-plugin": "^1.2.5",
     "url-loader": "^1.0.1",
     "vinyl-source-stream": "^1.1.0",
