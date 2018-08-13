@@ -1,5 +1,3 @@
-/// <reference path="../../typings/index.d.ts" />
-
 const electron = require('electron');
 
 const ipcMain = electron.ipcMain;
