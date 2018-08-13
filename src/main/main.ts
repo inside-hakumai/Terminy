@@ -1,4 +1,4 @@
-/// <reference path="../../typings/index.d.ts" />
+import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions;
 
 const electron = require('electron');
 
@@ -357,7 +357,7 @@ function saveTask(){
 
 function createMenu() {
 
-   const templeteMenu = [
+   const templeteMenu : MenuItemConstructorOptions[] = [
       {
          label: app.getName(),
          submenu: [
@@ -397,7 +397,7 @@ function createMenu() {
             },
             {
                label: 'Auto save(unimplemented)',
-               enabled: 'false'
+               enabled: false
             }
 
          ]
