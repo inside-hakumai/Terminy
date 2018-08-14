@@ -4,7 +4,7 @@
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npx mocha --require ts-node/register --watch-extensions ts,tsx 'test/**/*.{ts,tsx}' tests/*.ts",
     "build": "npx webpack -d && npm run start",
     "start": "electron main/main.js"
   },
@@ -25,6 +25,7 @@
     "riot": "^3.4.4"
   },
   "devDependencies": {
+    "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.8",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.0.0",

@@ -7,6 +7,9 @@
     "paths": {
       "electron": [
         "node_modules/electron/electron.d.ts"
+      ],
+      "spectron": [
+        "node_modules/spectron/lib/spectron.d.ts"
       ]
     }
   },
