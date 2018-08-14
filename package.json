@@ -4,9 +4,10 @@
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {
-    "test": "npx mocha --require ts-node/register --watch-extensions ts,tsx 'test/**/*.{ts,tsx}' tests/*.ts",
-    "build": "npx webpack -d && npm run start",
-    "start": "electron main/main.js"
+    "build": "npx webpack -d",
+    "start": "electron main/main.js",
+    "test": "npm run build && npx mocha --require ts-node/register --watch-extensions ts tests/*.ts",
+    "exec": "npm run build && npm run start"
   },
   "author": "inside-hakumai",
   "repository": {
