@@ -1,15 +1,4 @@
-import MenuItemConstructorOptions = Electron.MenuItemConstructorOptions;
-
-const electron = require('electron');
-
-const ipcMain = electron.ipcMain;
-
-// Module to control application life.
-const app = electron.app;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow;
-
-const Menu = electron.Menu;
+import {app, BrowserWindow, ipcMain, Menu, MenuItemConstructorOptions} from "electron";
 
 const path = require('path');
 const url = require('url');
@@ -29,106 +18,79 @@ let taskIdHead;
 // JSON config data
 let config;
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
-
-// A window for dialog to create new task
-let dialogWindow = null;
-// A window for preferences
-let preferenceWindow = null;
+let mainWindow      : BrowserWindow = null;
+let dialogWindow    : BrowserWindow = null;
+let preferenceWindow: BrowserWindow = null;
 
 // store BrowserWindow object of currently focused window
-let focusedWindow = null;
+let focusedWindow: BrowserWindow = null;
 
-function createWindow() {
-   // Create the browser window.
-   mainWindow = new BrowserWindow({
-      width: 350,
-      height: 108,
-      frame: false,
-      resizable: false,
-      center: false,
-      hasShadow: false,
-      transparent: true,
+function createWindow(): Promise<{}> {
+   return new Promise((resolve) => {
+      // Create the browser window.
+      mainWindow = new BrowserWindow({
+         width: 350,
+         height: 108,
+         frame: false,
+         resizable: false,
+         center: false,
+         hasShadow: false,
+         transparent: true,
+      });
+
+      // and load the index.html of the app.
+      mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
+
+      // Open the DevTools.
+      // mainWindow.webContents.openDevTools()
+
+      mainWindow.on('focus', () => {
+         focusedWindow = mainWindow;
+      });   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
+
+      // Emitted when the window is closed.
+      mainWindow.on('closed', function () {
+         // Dereference the window object, usually you would store windows
+         // in an array if your app supports multi windows, this is the time
+         // when you should delete the corresponding element.
+         mainWindow = null
+      })
+
+      ipcMain.on('task-request', (event, arg) => {
+         event.sender.send('send-task', getTasks());
+      });
+
+      resolve();
    });
-
-   // and load the index.html of the app.
-   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
-
-   // Open the DevTools.
-   // mainWindow.webContents.openDevTools()
-
-   mainWindow.on('focus', () => {
-      focusedWindow = mainWindow;
-   });   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
-
-   // Emitted when the window is closed.
-   mainWindow.on('closed', function () {
-      // Dereference the window object, usually you would store windows
-      // in an array if your app supports multi windows, this is the time
-      // when you should delete the corresponding element.
-      mainWindow = null
-   })
-
-   ipcMain.on('task-request', (event, arg) => {
-      event.sender.send('send-task', getTasks());
-   })
 }
-
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', function() {
-   createWindow();
-   createMenu();
-});
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-   // On OS X it is common for applications and their menu bar
-   // to stay active until the user quits explicitly with Cmd + Q
-   if (process.platform !== 'darwin') {
-      app.quit()
-   }
-});
-
-app.on('activate', function () {
-   // On OS X it's common to re-create a window in the app when the
-   // dock icon is clicked and there are no other windows open.
-   if (mainWindow === null) {
-      createWindow()
-   }
-});
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-
-app.on('ready', loadConfig);
 
 /**
  * 設定とタスクのデータをロードする
  * ロード完了後、RendererProcess側の'did-finish-load'イベントを受けてメッセージを送る
  */
-function loadConfig(){
-   storage.get('config', function(error, data) {
-      if (error) throw error;
+function loadConfig(): Promise<{}> {
+   return new Promise( (resolve) => {
+      storage.get('config', (error, data) => {
+         if (error) throw error;
 
-      if (Object.keys(data).length === 0){
-         config = getInitialConfig();
-         storage.set('config', config, function(error){
-            if (error) throw error;
+         if (Object.keys(data).length === 0){
+            config = getInitialConfig();
+            storage.set('config', config, function(error){
+               if (error) throw error;
+            });
+         } else {
+            config = data;
+         }
+
+         taskData = initializeTaskData(config.savePath);
+
+         saveTask();
+
+         mainWindow.webContents.on('did-finish-load', function() {
+            mainWindow.webContents.send('ready-tasks');
          });
-      } else {
-         config = data;
-      }
 
-      taskData = initializeTaskData(config.savePath);
-
-      saveTask();
-
-      mainWindow.webContents.on('did-finish-load', function() {
-         mainWindow.webContents.send('ready-tasks');
+         resolve();
       });
    });
 }
@@ -355,70 +317,101 @@ function saveTask(){
 /****************************/
 /*********** Menu ***********/
 
-function createMenu() {
+function createMenu(): Promise<{}> {
 
-   const templeteMenu : MenuItemConstructorOptions[] = [
-      {
-         label: app.getName(),
-         submenu: [
-            {role: 'about'},
-            {type: 'separator'},
-            {
-               label: 'Preferences',
-               accelerator: 'Command+,',
-               click: function() { createPrefrenceWindow(); }
-            },
-            {type: 'separator'},
-            {role: 'services', submenu: []},
-            {type: 'separator'},
-            {role: 'hide'},
-            {role: 'hideothers'},
-            {role: 'unhide'},
-            {type: 'separator'},
-            {role: 'quit'}
-         ]
-      },
-      {
-         label: 'File',
-         submenu: [
-            {
-               label: 'Create new task',
-               accelerator: 'Command+N',
-               click: function() { createNewTaskDialog(); }
-            },
-            {type: 'separator'},
-            {label: 'Cancel task'},
-            {label: 'Finish task'},
-            {type: 'separator'},
-            {
-               label: 'Save',
-               accelerator: 'Command+S',
-               click: function() { saveTask(); }
-            },
-            {
-               label: 'Auto save(unimplemented)',
-               enabled: false
-            }
+   return new Promise((resolve) => {
+      const templeteMenu : MenuItemConstructorOptions[] = [
+         {
+            label: app.getName(),
+            submenu: [
+               {role: 'about'},
+               {type: 'separator'},
+               {
+                  label: 'Preferences',
+                  accelerator: 'Command+,',
+                  click: function() { createPrefrenceWindow(); }
+               },
+               {type: 'separator'},
+               {role: 'services', submenu: []},
+               {type: 'separator'},
+               {role: 'hide'},
+               {role: 'hideothers'},
+               {role: 'unhide'},
+               {type: 'separator'},
+               {role: 'quit'}
+            ]
+         },
+         {
+            label: 'File',
+            submenu: [
+               {
+                  label: 'Create new task',
+                  accelerator: 'Command+N',
+                  click: function() { createNewTaskDialog(); }
+               },
+               {type: 'separator'},
+               {label: 'Cancel task'},
+               {label: 'Finish task'},
+               {type: 'separator'},
+               {
+                  label: 'Save',
+                  accelerator: 'Command+S',
+                  click: function() { saveTask(); }
+               },
+               {
+                  label: 'Auto save(unimplemented)',
+                  enabled: false
+               }
 
-         ]
-      },
-      {
-         label: 'View',
-         submenu: [
-            {
-               label: 'Reload',
-               accelerator: 'Command+R',
-               click: function() { mainWindow.reload(); }
-            },
-            {
-               label: 'Toggle Developer Tools',
-               accelerator: 'Alt+Command+I',
-               click: function() { focusedWindow.toggleDevTools(); }
-            },
-         ]
-      }
-   ];
+            ]
+         },
+         {
+            label: 'View',
+            submenu: [
+               {
+                  label: 'Reload',
+                  accelerator: 'Command+R',
+                  click: function() { mainWindow.reload(); }
+               },
+               {
+                  label: 'Toggle Developer Tools',
+                  accelerator: 'Alt+Command+I',
+                  click: function() { focusedWindow.webContents.toggleDevTools(); }
+               },
+            ]
+         }
+      ];
 
-   const menu = Menu.buildFromTemplate(templeteMenu);
-   Menu.setApplicationMenu(menu);
+      const menu = Menu.buildFromTemplate(templeteMenu);
+      Menu.setApplicationMenu(menu);
+
+      resolve();
+   });
 }
+
+
+// This method will be called when Electron has finished
+// initialization and is ready to create browser windows.
+// Some APIs can only be used after this event occurs.
+app.on('ready', () => {
+   createWindow()
+      .then(loadConfig)
+      .then(createMenu);
+});
+
+// Quit when all windows are closed.
+app.on('window-all-closed', function () {
+   // On OS X it is common for applications and their menu bar
+   // to stay active until the user quits explicitly with Cmd + Q
+   if (process.platform !== 'darwin') {
+      app.quit()
+   }
+});
+
+app.on('activate', function () {
+   // On OS X it's common to re-create a window in the app when the
+   // dock icon is clicked and there are no other windows open.
+   if (mainWindow === null) {
+      createWindow()
+   }
+});
