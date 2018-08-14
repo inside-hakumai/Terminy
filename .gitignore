@@ -129,3 +129,8 @@ typings/
 renderer/script/*
 renderer/style/*
 main/*
+src/main/*.js
+src/main/*.js.map
+src/renderer/js/*.js
+src/renderer/js/*.js.map
+tests/*.js
