@@ -12,34 +12,34 @@ const appPath = path.join(__dirname, '..', 'main', 'main.js');
 
 describe('Application launch', function () {
    this.timeout(10000);
+   let app: Spectron.Application;
 
    beforeEach(function () {
-      this.app = new Spectron.Application({
+      app = new Spectron.Application({
          path: electronPath,
          args: [appPath]
       });
-      return this.app.start();
+      return app.start();
    });
 
    afterEach(function () {
-      if (this.app && this.app.isRunning()) {
-         return this.app.stop();
+      if (app && app.isRunning()) {
+         return app.stop();
       }
    });
 
-   it('shows an initial window', function () {
-      let app = this.app;
-
-      return this.app.client.getWindowCount().then(function (count) {
+   it('shows an initial window', (done) => {
+      app.client.getWindowCount().then((count) => {
          assert.equal(count, 1)
          // Please note that getWindowCount() will return 2 if `dev tools` are opened.
          // assert.equal(count, 2)
-      }).then(function () {
+      }).then(() => {
          // Check if the window is visible
          return app.browserWindow.isVisible();
-      }).then(function (isVisible) {
+      }).then((isVisible) => {
          // Verify the window is visible
-         assert.equal(isVisible, true)
+         assert.equal(isVisible, true);
+         done();
       });
    });
 });
