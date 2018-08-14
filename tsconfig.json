@@ -1,8 +1,17 @@
 {
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "electron": [
+        "node_modules/electron/electron.d.ts"
+      ]
+    }
+  },
   "include": [
     "src/**/*"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": []
 }

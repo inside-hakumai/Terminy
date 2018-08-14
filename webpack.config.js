@@ -4,12 +4,13 @@ let path = require('path');
 const MODE = 'development';
 const enabledSourceMap = (MODE === 'development');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
-let commonConfig = module.exports = {
+let commonConfig = {
    module: {
       rules: [
          {
-            test: /\/.ts$/,
+            test: /\.ts$/,
             use: [
                {
                   loader: 'babel-loader',
@@ -18,7 +19,12 @@ let commonConfig = module.exports = {
                      presets: ['es2015'],
                   }
                },
-               'ts-loader'
+               {
+                  loader: 'ts-loader',
+                  options: {
+                     allowTsInNodeModules: true
+                  }
+               }
             ],
          },
          {
@@ -74,7 +80,11 @@ let commonConfig = module.exports = {
       modules: [
          "node_modules",
          path.resolve(__dirname, "src/renderer/js"),
-      ]
+      ],
+      plugins: [
+         new TsconfigPathsPlugin()
+      ],
+      extensions: ['.js', '.ts', '.tsx', '.jsx', '.json']
    },
    plugins: [
       new webpack.ProvidePlugin({
@@ -87,7 +97,7 @@ let commonConfig = module.exports = {
    devtool: 'cheap-module-eval-source-map',
 };
 
-module.exports = [
+const configs = [
    Object.assign({}, commonConfig, {
       target: 'electron-renderer',
       entry:  {
@@ -115,3 +125,5 @@ module.exports = [
       },
    })
 ];
+
+module.exports = configs;
