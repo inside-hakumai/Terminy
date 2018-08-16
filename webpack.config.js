@@ -15,8 +15,7 @@ let commonConfig = {
                {
                   loader: 'babel-loader',
                   options: {
-                     sourceMap: enabledSourceMap,
-                     presets: ['es2015'],
+                     sourceMap: enabledSourceMap
                   }
                },
                {
@@ -65,10 +64,7 @@ let commonConfig = {
          {
             test: /\.js$|\.tag$/,
             exclude: /node_modules/,
-            loader: "babel-loader",
-            query: {
-               presets: ['es2015', 'es2015-riot']
-            }
+            loader: "babel-loader"
          },
          {
             test: /\.svg$/,
@@ -94,7 +90,7 @@ let commonConfig = {
       }),
       new UglifyJsPlugin(),
    ],
-   devtool: 'cheap-module-eval-source-map',
+   devtool: 'source-map',
 };
 
 const configs = [

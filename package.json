@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "npx webpack -d",
-    "start": "electron main/main.js",
+    "start": "npx electron main/main.js",
     "test": "npm run build && npx mocha --require ts-node/register --watch-extensions ts tests/*.ts",
     "exec": "npm run build && npm run start"
   },
@@ -18,7 +18,7 @@
   "dependencies": {
     "@types/jquery": "^3.3.5",
     "csv-parse": "^2.4.0",
-    "electron": "^2.0.0",
+    "electron": "~1.8",
     "electron-json-storage": "^4.1.1",
     "flatpickr": "^2.6.1",
     "jquery": "^3.2.1",
@@ -26,9 +26,12 @@
     "riot": "^3.4.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.0.0-rc.1",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.8",
-    "babel-core": "^6.26.3",
+    "@types/webdriverio": "^4.10.3",
+    "babel-core": "^7.0.0-0",
     "babel-loader": "^7.0.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es2015-riot": "^1.1.0",
@@ -40,7 +43,7 @@
     "riotjs-loader": "^4.0.0",
     "sass-loader": "^7.0.1",
     "source-map-loader": "^0.2.3",
-    "spectron": "^3.8.0",
+    "spectron": "3.8.0",
     "style-loader": "^0.17.0",
     "ts-loader": "^4.4.2",
     "ts-node": "^7.0.1",
