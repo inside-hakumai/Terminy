@@ -4,9 +4,10 @@
   "description": "watch your deadlines",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack -d && npm run start",
-    "start": "electron main/main.js"
+    "build": "npx webpack -d",
+    "start": "npx electron main/main.js",
+    "test": "npm run build && npx mocha --require ts-node/register --watch-extensions ts tests/*.ts",
+    "exec": "npm run build && npm run start"
   },
   "author": "inside-hakumai",
   "repository": {
@@ -17,7 +18,7 @@
   "dependencies": {
     "@types/jquery": "^3.3.5",
     "csv-parse": "^2.4.0",
-    "electron": "^2.0.0",
+    "electron": "~1.8",
     "electron-json-storage": "^4.1.1",
     "flatpickr": "^2.6.1",
     "jquery": "^3.2.1",
@@ -25,23 +26,33 @@
     "riot": "^3.4.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.0.0-rc.1",
+    "@babel/preset-env": "^7.0.0-rc.1",
+    "@types/mocha": "^5.2.5",
     "@types/node": "^10.5.8",
-    "babel-core": "^6.26.3",
+    "@types/webdriverio": "^4.10.3",
+    "babel-core": "^7.0.0-0",
     "babel-loader": "^7.0.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-es2015-riot": "^1.1.0",
     "css-loader": "^0.28.11",
+    "dumper.js": "^1.1.1",
     "file-loader": "^1.1.11",
+    "mocha": "^5.2.0",
     "node-sass": "^4.9.3",
     "riotjs-loader": "^4.0.0",
     "sass-loader": "^7.0.1",
     "source-map-loader": "^0.2.3",
+    "spectron": "3.8.0",
     "style-loader": "^0.17.0",
+    "ts-loader": "^4.4.2",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
     "typescript": "^2.8.3",
     "uglifyjs-webpack-plugin": "^1.2.5",
     "url-loader": "^1.0.1",
     "vinyl-source-stream": "^1.1.0",
-    "webpack": "^2.5.1",
+    "webpack": "^4.16.5",
     "webpack-cli": "^3.1.0",
     "webpack-stream": "^3.2.0",
     "webpack-target-electron-renderer": "^0.4.0"

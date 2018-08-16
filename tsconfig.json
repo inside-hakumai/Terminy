@@ -1,8 +1,21 @@
 {
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "sourceMap": true,
+    "inlineSources": true,
+    "baseUrl": ".",
+    "paths": {
+      "electron": [
+        "node_modules/electron/electron.d.ts"
+      ],
+      "spectron": [
+        "node_modules/spectron/lib/spectron.d.ts"
+      ]
+    }
+  },
   "include": [
     "src/**/*"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": []
 }

@@ -4,21 +4,26 @@ let path = require('path');
 const MODE = 'development';
 const enabledSourceMap = (MODE === 'development');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
-let commonConfig = module.exports = {
+let commonConfig = {
    module: {
       rules: [
          {
-            test: /\/.ts$/,
+            test: /\.ts$/,
             use: [
                {
                   loader: 'babel-loader',
                   options: {
-                     sourceMap: enabledSourceMap,
-                     presets: ['es2015'],
+                     sourceMap: enabledSourceMap
                   }
                },
-               'ts-loader'
+               {
+                  loader: 'ts-loader',
+                  options: {
+                     allowTsInNodeModules: true
+                  }
+               }
             ],
          },
          {
@@ -59,10 +64,7 @@ let commonConfig = module.exports = {
          {
             test: /\.js$|\.tag$/,
             exclude: /node_modules/,
-            loader: "babel-loader",
-            query: {
-               presets: ['es2015', 'es2015-riot']
-            }
+            loader: "babel-loader"
          },
          {
             test: /\.svg$/,
@@ -74,7 +76,11 @@ let commonConfig = module.exports = {
       modules: [
          "node_modules",
          path.resolve(__dirname, "src/renderer/js"),
-      ]
+      ],
+      plugins: [
+         new TsconfigPathsPlugin()
+      ],
+      extensions: ['.js', '.ts', '.tsx', '.jsx', '.json']
    },
    plugins: [
       new webpack.ProvidePlugin({
@@ -84,10 +90,10 @@ let commonConfig = module.exports = {
       }),
       new UglifyJsPlugin(),
    ],
-   devtool: 'cheap-module-eval-source-map',
+   devtool: 'source-map',
 };
 
-module.exports = [
+const configs = [
    Object.assign({}, commonConfig, {
       target: 'electron-renderer',
       entry:  {
@@ -115,3 +121,5 @@ module.exports = [
       },
    })
 ];
+
+module.exports = configs;
