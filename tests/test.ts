@@ -1,7 +1,7 @@
 import * as Spectron from "spectron";
 import * as path from "path";
-
-const assert = require('assert');
+import {dd} from "dumper.js";
+import * as assert from "assert";
 
 let electronPath = path.join(__dirname, '..', 'node_modules', '.bin', 'electron');
 if (process.platform === 'win32') {
@@ -28,18 +28,16 @@ describe('Application launch', function () {
       }
    });
 
-   it('shows an initial window', (done) => {
-      app.client.getWindowCount().then((count) => {
-         assert.equal(count, 1)
-         // Please note that getWindowCount() will return 2 if `dev tools` are opened.
-         // assert.equal(count, 2)
-      }).then(() => {
-         // Check if the window is visible
-         return app.browserWindow.isVisible();
-      }).then((isVisible) => {
-         // Verify the window is visible
-         assert.equal(isVisible, true);
-         done();
-      });
+   it('shows an initial window', async () => {
+      const count = await app.client.getWindowCount();
+      assert.equal(count, 1, "window count");
+      // Please note that getWindowCount() will return 2 if `dev tools` are opened.
+      // assert.equal(count, 2)
+
+      const isVisible = await app.browserWindow.isVisible();
+      assert.equal(isVisible, true, "window is visible");
+
+      const timerDoms = await app.client.$$("timers .timer");
+      assert.equal(timerDoms.length, 1, "number of initial task = 1");
    });
 });
