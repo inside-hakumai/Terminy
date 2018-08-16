@@ -1,14 +1,13 @@
 import {app, BrowserWindow, ipcMain, Menu, MenuItemConstructorOptions} from "electron";
+import * as path from "path";
+import * as fs from "fs";
+import * as moment from "moment";
 
-// app.commandLine.appendSwitch('remote-debugging-port', '9222');
-
-const path = require('path');
-const url = require('url');
 const mkdirp = require('mkdirp');
 const storage = require('electron-json-storage');
-const fs = require('fs');
 const parse = require('csv-parse/lib/sync');
-const moment = require('moment');
+
+// app.commandLine.appendSwitch('remote-debugging-port', '9222');
 
 const APP_NAME = 'Terminy';
 const APP_NAME_LCASE = 'terminy';
@@ -27,42 +26,43 @@ let preferenceWindow: BrowserWindow = null;
 // store BrowserWindow object of currently focused window
 let focusedWindow: BrowserWindow = null;
 
-function createWindow(): Promise<{}> {
-   return new Promise((resolve) => {
-      // Create the browser window.
-      mainWindow = new BrowserWindow({
-         width: 350,
-         height: 108,
-         frame: false,
-         resizable: false,
-         center: false,
-         hasShadow: false,
-         transparent: true,
-      });
+function createWindow() {
+   // Create the browser window.
+   mainWindow = new BrowserWindow({
+      width: 350,
+      height: 108,
+      frame: false,
+      resizable: false,
+      center: false,
+      hasShadow: false,
+      transparent: true,
+      show: false,
+   });
 
-      // and load the index.html of the app.
-      mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
+   mainWindow.once('ready-to-show', () => {
+      mainWindow.show();
+   });
 
-      // Open the DevTools.
-      // mainWindow.webContents.openDevTools()
+   // and load the index.html of the app.
+   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 
-      mainWindow.on('focus', () => {
-         focusedWindow = mainWindow;
-      });   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
+   // Open the DevTools.
+   // mainWindow.webContents.openDevTools()
 
-      // Emitted when the window is closed.
-      mainWindow.on('closed', function () {
-         // Dereference the window object, usually you would store windows
-         // in an array if your app supports multi windows, this is the time
-         // when you should delete the corresponding element.
-         mainWindow = null
-      })
+   mainWindow.on('focus', () => {
+      focusedWindow = mainWindow;
+   });   mainWindow.loadURL(`file://${__dirname}/../renderer/index.html`);
 
-      ipcMain.on('task-request', (event, arg) => {
-         event.sender.send('send-task', getTasks());
-      });
+   // Emitted when the window is closed.
+   mainWindow.on('closed', function () {
+      // Dereference the window object, usually you would store windows
+      // in an array if your app supports multi windows, this is the time
+      // when you should delete the corresponding element.
+      mainWindow = null
+   })
 
-      resolve();
+   ipcMain.on('task-request', (event, arg) => {
+      event.sender.send('send-task', getTasks());
    });
 }
 
@@ -70,30 +70,27 @@ function createWindow(): Promise<{}> {
  * 設定とタスクのデータをロードする
  * ロード完了後、RendererProcess側の'did-finish-load'イベントを受けてメッセージを送る
  */
-function loadConfig(): Promise<{}> {
-   return new Promise( (resolve) => {
-      storage.get('config', (error, data) => {
-         if (error) throw error;
+function loadConfig() {
+   storage.get('config', (error, data) => {
+      if (error) throw error;
 
-         if (Object.keys(data).length === 0){
-            config = getInitialConfig();
-            storage.set('config', config, function(error){
-               if (error) throw error;
-            });
-         } else {
-            config = data;
-         }
-
-         taskData = initializeTaskData(config.savePath);
-
-         saveTask();
-
-         mainWindow.webContents.on('did-finish-load', function() {
-            mainWindow.webContents.send('ready-tasks');
+      if (Object.keys(data).length === 0){
+         config = getInitialConfig();
+         storage.set('config', config, function(error){
+            if (error) throw error;
          });
+      } else {
+         config = data;
+      }
 
-         resolve();
+      taskData = initializeTaskData(config.savePath);
+
+      saveTask();
+
+      mainWindow.webContents.on('did-finish-load', function() {
+         mainWindow.webContents.send('ready-tasks');
       });
+
    });
 }
 
@@ -310,7 +307,9 @@ function saveTask(){
       if (err) {
          console.error(err)
       } else {
-         fs.writeFile(config.savePath, writeString);
+         fs.writeFile(config.savePath, writeString, (err) => {
+            if (err) throw err;
+         });
       }
    });
 }
@@ -395,10 +394,10 @@ function createMenu(): Promise<{}> {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
-   createWindow()
-      .then(loadConfig)
-      .then(createMenu);
+app.on('ready', async () => {
+   await createWindow();
+   await loadConfig();
+   await createMenu();
 });
 
 // Quit when all windows are closed.
