@@ -1,7 +1,0 @@
-{
-  "globalDependencies": {
-    "electron": "file:node_modules/electron/electron.d.ts",
-    "jquery": "registry:dt/jquery#1.10.0+20170310222111",
-    "moment": "registry:dt/moment#2.11.1+20161010105546"
-  }
-}
