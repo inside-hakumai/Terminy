@@ -1,5 +1,7 @@
 import {app, BrowserWindow, ipcMain, Menu, MenuItemConstructorOptions} from "electron";
 
+// app.commandLine.appendSwitch('remote-debugging-port', '9222');
+
 const path = require('path');
 const url = require('url');
 const mkdirp = require('mkdirp');
